@@ -131,6 +131,7 @@ public final class Terminal extends Application {
 		} else {
 			do {
 				_executar();
+				console.showMessage("Deseja [s]air?\n");
 			} while (!console.readExit());
 		}
 		console.showMessage("----Até logo----\n");
