@@ -45,14 +45,17 @@ public final class Terminal extends Application {
 	public Terminal() {
 		console = new Console();
 		singleRun = hasArgument("simples");
-		String arg;
-		arg = getArgument("volume");
-		if (!arg.isEmpty()) {
+		String arg = getArgument("volume");
+		if (arg.isEmpty()) {
+			volume = Double.NEGATIVE_INFINITY;
+		} else {
 			singleRun = true;
 			lerVolume(arg);
 		}
 		arg = getArgument("ph");
-		if (!arg.isEmpty()) {
+		if (arg.isEmpty()) {
+			phInicial = Double.NEGATIVE_INFINITY;
+		} else {
 			singleRun = true;
 			lerPh(arg);
 		}
@@ -88,7 +91,7 @@ public final class Terminal extends Application {
 			volume = Double.parseDouble(vol);
 		} catch (NumberFormatException erro) {
 			console.showError("O volume deve ser um número", erro);
-			volume = Double.NaN;
+			volume = Double.NEGATIVE_INFINITY;
 		}
 	}
 
@@ -110,11 +113,11 @@ public final class Terminal extends Application {
 			phInicial = Double.parseDouble(ph);
 			if (phInicial < 0 || phInicial > 7) {
 				console.showError("O pH deve estar entre 0 e 7", null);
-				phInicial = Double.NaN;
+				phInicial = Double.NEGATIVE_INFINITY;
 			}
 		} catch (NumberFormatException erro) {
 			console.showError("O pH inicial deve ser um número", erro);
-			phInicial = Double.NaN;
+			phInicial = Double.NEGATIVE_INFINITY;
 		}
 	}
 
@@ -125,37 +128,38 @@ public final class Terminal extends Application {
 	@Override
 	public void executar() {
 		console.showMessage("----NeutralizaPH----\n");
-		console.showMessage("-Netralização de água ácida com CaOH (cal)-\n");
+		console.showMessage("-Neutralização de água ácida com CaOH (cal)-\n");
 		if (singleRun) {
 			_executar();
 		} else {
 			do {
 				_executar();
-				console.showMessage("Deseja [s]air?\n");
+				volume = Double.NEGATIVE_INFINITY;
+				phInicial = Double.NEGATIVE_INFINITY;
+				console.showMessage("\nSimulação concluída\nInsira [s] para sair ou outro caractere para continuar.");
 			} while (!console.readExit());
 		}
-		console.showMessage("----Até logo----\n");
+		console.showMessage("\n----Até logo----\n");
 	}
 
 	/**
 	 * Realiza a interação com o usuário.
 	 */
 	private void _executar() {
-		do {
+		while (volume == Double.NEGATIVE_INFINITY) {
 			console.showMessage(mensagemVolume, false);
 			lerVolume();
-		} while (volume == Double.NaN);
-		do {
+		}
+		while (phInicial == Double.NEGATIVE_INFINITY) {
 			console.showMessage(mensagemPh, false);
 			lerPh();
-		} while (phInicial == Double.NaN);
+		}
 		console.showMessage("\nPara neutralizar " + formatNumber(volume)
 				+ "l de água com pH " + formatNumber(phInicial)
 				+ " são necessários:\n", false);
 		double qtNeutralizante = (7 - phInicial) * (volume / 10.55);
 		String _qtNeutralizante = formatNumber(qtNeutralizante);
 		console.showMessage("    " + _qtNeutralizante
-				+ "l de solução neutralizante, ou\n    " + _qtNeutralizante
 				+ "g de cal (CaOH)");
 	}
 }

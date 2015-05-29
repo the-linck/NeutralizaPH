@@ -49,11 +49,9 @@ public abstract class Application {
 	 */
 	public static String getArgument(String find) {
 		Optional<String> argument = Arrays.stream(cmdArgs)
-		// Substituir equals () por match() no futuro,para oder usar expressões
-		// regulares e permitir argumentos em diferentes formas
-				.filter(x -> x.equals(find)).findFirst();
+				.filter(x -> x.startsWith(find)).findFirst();
 		if (argument.isPresent()) {
-			return argument.get().replaceAll(".+=", "");
+			return argument.get().replaceFirst("^\\w+=(\\w+)$", "$1");
 		} else {
 			return "";
 		}
